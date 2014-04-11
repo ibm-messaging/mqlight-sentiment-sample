@@ -32,7 +32,6 @@ Once you have observed the single threaded application, stop it and then run
 
 ```
 node worker.nodejs/worker.js
-
 ```
 
 to start the worker thread and
