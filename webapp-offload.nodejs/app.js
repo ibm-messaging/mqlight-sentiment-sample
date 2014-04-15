@@ -113,6 +113,11 @@ io.sockets.on('connection', function(socket) {
     
     // When we receive processed data from the worker, emit it to the browser
     destination.on('message', function(msg) {
+        if (typeof (msg)=="string") {
+              // required to workaround a temporary limitation in JMS interopability.
+              // where JSON is not automatically co-erced to an object. 
+              msg=JSON.parse(msg);
+        }
         //console.log("received graphdata " , msg);
         var product=msg.productName;
         productFrequency[product]++;
