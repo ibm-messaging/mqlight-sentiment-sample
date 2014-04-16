@@ -1,0 +1,5 @@
+---
+applications:
+- no-route: true
+  path: ./MQServiceSampleWorker.jar
+  buildpack: https://github.com/cloudfoundry/java-buildpack
