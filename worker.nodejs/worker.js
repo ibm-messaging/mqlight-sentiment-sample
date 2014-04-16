@@ -12,19 +12,19 @@
 
 var mqlight = require('mqlight');
 
-//VCAP_APPLICATION contains useful information about a deployed application.
-var appInfo = JSON.parse(process.env.VCAP_APPLICATION || "{}");
-
-var services = JSON.parse(process.env.VCAP_SERVICES || "{}");
-if (services[ 'Elastic MQ-0.1' ] != null) {
-	var mql_ip=(services [ 'Elastic MQ-0.1' ][0].credentials.host );
-	var mql_port= (services [ 'Elastic MQ-0.1' ][0].credentials.msgport );
-}else {
-	var mql_ip=( "localhost");
-	var mql_port= ( 5672);
-
+//when deployed to bluemix, VCAP_APPLICATION contains useful information about a deployed application.
+var appInfo = JSON.parse(process.env.VCAP_APPLICATION || "{}" );
+// process connection information - local or cloud
+var credentials, opts;
+if (process.env.VCAP_SERVICES) {
+    var services = JSON.parse(process.env.VCAP_SERVICES);
+    if (services[ 'Elastic MQ-0.1' ] != null) { credentials=(services [ 'Elastic MQ-0.1' ][0].credentials)} 
+    else if (services[ 'MQLight for Koa-0.1' ] != null) { credentials=(services [ 'MQLight for Koa-0.1' ][0].credentials)}
+    opts = {  user: credentials.username , password: credentials.password, service:'amqp://' + credentials.host + ':' + credentials.msgport};
+} else {
+    opts = {  service:'amqp://localhost:5672'};
 }
-var opts = { host: mql_ip , port: mql_port, service:'amqp://localhost'};
+
 console.log ('connecting to mq light as follows' ,opts);
 var client = mqlight.createClient(opts);
 
@@ -36,9 +36,9 @@ client.connect(function(err) {
 });
 
 client.on('connected', function() {
-	console.log('Connected to ' + opts.host + ':' + opts.port + ' using client-id ' + client.getId());
+	console.log('Connected to ' + opts.service + ' using client-id ' + client.getId());
 
-	// Subscribe to the topic 'tweets' to recieve tweets sent by app.js
+	// Subscribe to the topic 'tweets' to recieve tweets sent by web-tier
 	var destination = client.subscribe('tweets','tweetshare', function(err, address) {
 		if (err) {
 			console.error('Problem with subscribe  request: ' + err.message);
@@ -50,7 +50,6 @@ client.on('connected', function() {
 	});
 
 	function sendMessage(topic, body) {
-		console.log ('sending message: ' ,body);
 		client.send(topic, body, function(err, msg) {
 			if (err) {
 				console.error('Problem with send request: ' + err.message);
@@ -59,9 +58,8 @@ client.on('connected', function() {
 		});
 	}
 
-	// When we recieve a message, process it and send it to app.js
+	// When we recieve a message, process it and send it to web-tier
 	destination.on('message', function(msg) {
-
 		processTweet(msg);
 	});
 

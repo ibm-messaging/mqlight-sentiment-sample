@@ -3,16 +3,11 @@
   "description" : "Worker thread example for IBM MQ Light",
   "version" : "1.0.0",
   "dependencies" : {
-    "ntwitter" : "0.5.0",
-    "socket.io" : "0.9.16",
-  "mqlight" : "",
-  "sleep" : ""
-},
-  "engines": {
-              "node": ">=0.10.0"
+      "mqlight" : ">=0.1.2014041401",
+      "sleep" : "1.1.4"
   },
-  "repository" : {
-    "type" : "git",
-    "url" : "https://github.com/ibm-messaging/mqlight-worker-thread.git"
-  }
+  "engines": {
+              "node": "0.10.15"
+  },
+  "scripts" : {"start":"node worker.js"}
 }

@@ -1,0 +1,7 @@
+---
+applications:
+- disk: 1024M
+  no-route: true
+  command: node worker.js
+  path: .
+  memory: 512M

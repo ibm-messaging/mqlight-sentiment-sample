@@ -9,7 +9,6 @@
  * Contributors:
  * IBM - Initial Contribution
  *******************************************************************************/
-var dragon = require('unicode-dragon');
 var app = require('http').createServer(handler);
 var io = require('socket.io').listen(app);
 var fs = require('fs');
@@ -36,17 +35,17 @@ var appInfo = JSON.parse(process.env.VCAP_APPLICATION || "{}");
 // TODO: Get application information and use it in your app.
 
 // VCAP_SERVICES contains all the credentials of services bound to
-// this application. For details of its content, please refer to
-// the document or sample of each service.
-var services = JSON.parse(process.env.VCAP_SERVICES || "{}");
-if (services[ 'Elastic MQ-0.1' ] != null) {
-	var mql_ip=(services [ 'Elastic MQ-0.1' ][0].credentials.host );
-	var mql_port= (services [ 'Elastic MQ-0.1' ][0].credentials.msgport );
-}else {
-        var mql_ip=( "localhost");
-	var mql_port= ( 5672);
-
+// this application. 
+var credentials, opts;
+if (process.env.VCAP_SERVICES) {
+    var services = JSON.parse(process.env.VCAP_SERVICES);
+    if (services[ 'Elastic MQ-0.1' ] != null) { credentials=(services [ 'Elastic MQ-0.1' ][0].credentials)}
+    else if (services[ 'MQLight for Koa-0.1' ] != null) { credentials=(services [ 'MQLight for Koa-0.1' ][0].credentials)}
+    opts = {  user: credentials.username , password: credentials.password, service:'amqp://' + credentials.host + ':' + credentials.msgport};
+} else {
+    opts = {  service:'amqp://localhost:5672'};
 }
+
 var host = (process.env.VCAP_APP_HOST || '0.0.0.0');
 // The port on the DEA for communication with the application:
 var port = (process.env.VCAP_APP_PORT || 3000);
@@ -72,8 +71,6 @@ io.set('log level', 1);
 
 io.sockets.on('connection', function(socket) {
 
-  var opts = { host: mql_ip , port: mql_port, service:'amqp://localhost'};
-
   console.log ('connecting to mq light as follows: ',  opts);
   var client = mqlight.createClient(opts);
 //Make the connection
@@ -84,7 +81,7 @@ io.sockets.on('connection', function(socket) {
   });
 
   client.on('connected', function() {
-    console.log('Connected to ' + opts.host + ':' + opts.port + ' using client-id ' + client.getId());
+    console.log('Connected to ' + opts.service + ' using client-id ' + client.getId());
 
     var callback = function(err, address) {
       if (err) {
@@ -100,7 +97,6 @@ io.sockets.on('connection', function(socket) {
               // When we recieve a tweet, emit the tweet to the screen...
               socket.emit('tweet', {"text": data.text});
               // ...and send the tweet text to the worker for processing
-	      // we use dragon to guard against unpaired unicode surrogates resulting in invalid utf8
               sendMessage('tweets', ({'products':products,'tweet':data.text}));
             }
           });
@@ -113,12 +109,12 @@ io.sockets.on('connection', function(socket) {
     
     // When we receive processed data from the worker, emit it to the browser
     destination.on('message', function(msg) {
-        if (typeof (msg)=="string") {
-              // required to workaround a temporary limitation in JMS interopability.
-              // where JSON is not automatically co-erced to an object. 
-              msg=JSON.parse(msg);
-        }
-        //console.log("received graphdata " , msg);
+        console.log("received graphdata " , msg);
+	if (typeof (msg)=="string") {
+		// required to workaround a temporary limitation in JMS interopability.
+		// where JSON is not automatically co-erced to an object. 
+		msg=JSON.parse(msg);
+	}
         var product=msg.productName;
         productFrequency[product]++;
 	if (msg.happy) {productSentiment[product]++};
@@ -129,14 +125,15 @@ io.sockets.on('connection', function(socket) {
     });
 
     function sendMessage(topic, body) {
+	    console.log ("sending tweet to topic: ",topic);
       client.send(topic, body, function(err, msg) {
         if (err) {
           console.error('Problem with send request: ' + err.message);
           process.exit(0);
         }
-        /*if (msg) {
+        if (msg) {
           console.log("Sent message", msg);
-        }*/
+        }
       });
     }
 
