@@ -11,18 +11,10 @@
  *******************************************************************************/
 var app = require('http').createServer(handler);
 var io = require('socket.io').listen(app);
-var fs = require('fs');
 var twitter = require('ntwitter');
-var twitterkey;
-var twit;
-fs.readFile('./twitterkey.json', 'utf8', function (err, data) {
-	if (err) {
-		 console.log('Error: ' + err);
-	}else {
-		twitterkey=JSON.parse(data);
-                twit = new twitter( twitterkey );
-	}
-});
+var twitterkey = require('./twitterkey.json');
+var twit = new twitter( twitterkey );
+
 
 var products=['france','china','USA','UK','germany'];
 var productFrequency=[];

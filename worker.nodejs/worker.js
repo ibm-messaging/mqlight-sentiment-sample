@@ -11,18 +11,20 @@
  *******************************************************************************/
 
 var mqlight = require('mqlight');
+var uuid=require('node-uuid');
 
 //when deployed to bluemix, VCAP_APPLICATION contains useful information about a deployed application.
 var appInfo = JSON.parse(process.env.VCAP_APPLICATION || "{}" );
-// process connection information - local or cloud
+//process connection information - local or cloud
 var credentials, opts;
+var id='WRKR_' + uuid.v4().substring(0, 7);
 if (process.env.VCAP_SERVICES) {
-    var services = JSON.parse(process.env.VCAP_SERVICES);
-    if (services[ 'Elastic MQ-0.1' ] != null) { credentials=(services [ 'Elastic MQ-0.1' ][0].credentials)} 
-    else if (services[ 'MQLight for Koa-0.1' ] != null) { credentials=(services [ 'MQLight for Koa-0.1' ][0].credentials)}
-    opts = {  user: credentials.username , password: credentials.password, service:'amqp://' + credentials.host + ':' + credentials.msgport};
+	var services = JSON.parse(process.env.VCAP_SERVICES);
+	if (services[ 'Elastic MQ-0.1' ] != null) { credentials=(services [ 'Elastic MQ-0.1' ][0].credentials)} 
+	else if (services[ 'MQLight for Koa-0.1' ] != null) { credentials=(services [ 'MQLight for Koa-0.1' ][0].credentials)}
+	opts = {  user: credentials.username , password: credentials.password, service:'amqp://' + credentials.host + ':' + credentials.msgport};
 } else {
-    opts = {  service:'amqp://localhost:5672'};
+	opts = {  service:'amqp://localhost:5672', id:id };
 }
 
 console.log ('connecting to mq light as follows' ,opts);
@@ -63,13 +65,13 @@ client.on('connected', function() {
 		processTweet(msg);
 	});
 
-       /*
-        * This function processes all tweets to find instances of the products we are intested in.
-        * If a tweet is not interestign it is discarded and we move to the next.
-        * If a tweet is interesting we analyse it to determine whether the dentiment is positive.
-        * In this example the sentiment analysis is simply a random function as we are demonstrating messaging not analytics.
-        * Interesting tweets are sent back to the webapp together with the retults of the sentiment analysis
-        */
+	/*
+	 * This function processes all tweets to find instances of the products we are intested in.
+	 * If a tweet is not interestign it is discarded and we move to the next.
+	 * If a tweet is interesting we analyse it to determine whether the dentiment is positive.
+	 * In this example the sentiment analysis is simply a random function as we are demonstrating messaging not analytics.
+	 * Interesting tweets are sent back to the webapp together with the retults of the sentiment analysis
+	 */
 
 
 	function processTweet(tweetData) {

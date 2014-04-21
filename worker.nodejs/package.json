@@ -3,8 +3,9 @@
   "description" : "Worker thread example for IBM MQ Light",
   "version" : "1.0.0",
   "dependencies" : {
-      "mqlight" : ">=0.1.2014041401",
-      "sleep" : "1.1.4"
+      "mqlight" : ">=0.1.2014041501",
+      "sleep" : "1.1.4",
+      "node-uuid" : ""
   },
   "engines": {
               "node": "0.10.15"
