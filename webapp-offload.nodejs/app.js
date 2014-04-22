@@ -12,6 +12,7 @@
 var app = require('http').createServer(handler);
 var uuid = require ('node-uuid');
 var io = require('socket.io').listen(app);
+var fs = require('fs');
 var twitter = require('ntwitter');
 var mqlight = require('mqlight');
 var twitterkey = require('./twitterkey.json');

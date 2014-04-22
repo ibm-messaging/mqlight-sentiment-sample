@@ -11,6 +11,7 @@
  *******************************************************************************/
 var app = require('http').createServer(handler);
 var io = require('socket.io').listen(app);
+var fs = require('fs');
 var twitter = require('ntwitter');
 var twitterkey = require('./twitterkey.json');
 var twit = new twitter( twitterkey );
