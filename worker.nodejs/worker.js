@@ -20,7 +20,7 @@ var credentials, opts;
 var id='WRKR_' + uuid.v4().substring(0, 7);
 if (process.env.VCAP_SERVICES) {
 	var services = JSON.parse(process.env.VCAP_SERVICES);
-	if (services[ 'Elastic MQ-0.1' ] != null) { credentials=(services [ 'Elastic MQ-0.1' ][0].credentials)} 
+	if (services[ 'ElasticMQ-0.1' ] != null) { credentials=(services [ 'ElasticMQ-0.1' ][0].credentials)} 
 	else if (services[ 'MQLight for Koa-0.1' ] != null) { credentials=(services [ 'MQLight for Koa-0.1' ][0].credentials)}
 	opts = {  user: credentials.username , password: credentials.password, service:'amqp://' + credentials.host + ':' + credentials.msgport};
 } else {
