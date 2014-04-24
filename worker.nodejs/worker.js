@@ -83,6 +83,7 @@ client.on('connected', function() {
 				replyMessage['tweetText'] =tweetText;
 				replyMessage['productName']=product;
 				replyMessage['happy']=(Math.random()>0.5); //simulate sentiment analysis
+				console.log('Replying ' +  product + tweetText);
 				sendMessage('processedData', replyMessage);
 			}
 		}); 
