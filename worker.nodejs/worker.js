@@ -41,7 +41,7 @@ client.on('connected', function() {
 	console.log('Connected to ' + opts.service + ' using client-id ' + client.getId());
 
 	// Subscribe to the topic 'tweets' to recieve tweets sent by web-tier
-	var destination = client.subscribe('tweets','tweetshare', function(err, address) {
+	var destination = client.subscribe('tweets', function(err, address) {
 		if (err) {
 			console.error('Problem with subscribe  request: ' + err.message);
 			process.exit(0);
