@@ -4,7 +4,6 @@
   "version" : "1.0.0",
   "dependencies" : {
       "mqlight" : ">=0.1.2014041501",
-      "sleep" : "1.1.4",
       "node-uuid" : ""
   },
   "engines": {

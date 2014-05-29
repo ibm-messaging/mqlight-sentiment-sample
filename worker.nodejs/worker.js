@@ -88,11 +88,14 @@ client.on('connected', function() {
 			}
 		}); 
 
-		var sleep = require('sleep');
-		sleep.sleep(1)//This blocks the node worker thread for 1 second
+		sleep(1000)//This blocks the node worker thread for 1 second
 		//you would normally never do this. We are doing it to _simulate_
 		//a complex algorithm that takes a long time to run. 
 
+		function sleep(time) {
+    	var end = new Date().getTime();
+    	while(new Date().getTime() < end + time) {;}
+		}
 
 	} 
 });
