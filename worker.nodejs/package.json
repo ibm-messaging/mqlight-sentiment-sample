@@ -2,12 +2,16 @@
   "name" : "mqlight-worker-thread",
   "description" : "Worker thread example for IBM MQ Light",
   "version" : "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ibm-messaging/mqlight-sentiment-sample.git"
+  },
   "dependencies" : {
-      "mqlight" : ">=0.1.2014041501",
-      "node-uuid" : ""
+    "mqlight" : ">=0.1.2014041501",
+    "node-uuid" : ""
   },
   "engines": {
-              "node": "0.10.15"
+    "node": "0.10.15"
   },
   "scripts" : {"start":"node worker.js"}
 }
