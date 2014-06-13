@@ -7,7 +7,7 @@
     "url": "https://github.com/ibm-messaging/mqlight-sentiment-sample.git"
   },
   "dependencies" : {
-    "mqlight" : ">=0.1.2014041501",
+    "mqlight" : ">=0.1.2014060301",
     "node-uuid" : ""
   },
   "engines": {

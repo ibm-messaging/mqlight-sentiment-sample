@@ -10,7 +10,7 @@
     "ntwitter" : "0.5.0",
     "socket.io" : "0.9.16",
     "node-uuid" : "",
-    "mqlight" : ">=0.1.2014041501"
+    "mqlight" : ">=0.1.2014060101"
   },
   "engines": {
     "node": ">=0.10.0"

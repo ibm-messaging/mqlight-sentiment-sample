@@ -12,19 +12,43 @@
 
 var mqlight = require('mqlight');
 var uuid=require('node-uuid');
-
-//when deployed to bluemix, VCAP_APPLICATION contains useful information about a deployed application.
-var appInfo = JSON.parse(process.env.VCAP_APPLICATION || "{}" );
-//process connection information - local or cloud
-var credentials, opts;
+var opts;
 var id='WRKR_' + uuid.v4().substring(0, 7);
+
+/*
+ * when deployed to bluemix.
+ * VCAP_SERVICES contains all the credentials of services bound to this application. 
+ * the app should listen on VCAP_APP_HOST:VCAP_APP_PORT
+ */
+var  opts;
 if (process.env.VCAP_SERVICES) {
-	var services = JSON.parse(process.env.VCAP_SERVICES);
-	if (services[ 'ElasticMQ-0.1' ] != null) { credentials=(services [ 'ElasticMQ-0.1' ][0].credentials)} 
-	else if (services[ 'MQLight for Koa-0.1' ] != null) { credentials=(services [ 'MQLight for Koa-0.1' ][0].credentials)}
-	opts = {  user: credentials.username , password: credentials.password, service:'amqp://' + credentials.host + ':' + credentials.msgport};
+    var services = JSON.parse(process.env.VCAP_SERVICES);
+
+    console.log( 'Running BlueMix');
+
+    if (services[ 'mqlight' ] != null)
+    {    
+	console.log('Using mqlight');
+	// Use the Bluemix version 2 style lookup
+	username  = services [ 'mqlight' ][0].credentials.username;
+	password  = services [ 'mqlight' ][0].credentials.password;
+	connectionLookupURI  = services [ 'mqlight' ][0].credentials.connectionLookupURI;
+	host      = services [ 'mqlight' ][0].credentials.host;
+	MQXR_Port = services [ 'mqlight' ][0].credentials.msgport;
+    }
+    else
+    {
+	console.log( 'Error - Check that app is bound to service');
+    }
+
+    console.log("Host is "+host);
+    console.log("AMQP listener port is "+MQXR_Port);
+    console.log("User is "+username);
+    console.log("Password is "+password);
+    console.log("ConnectionLookupURI is "+connectionLookupURI);
+opts = {  user: username , password: password, service: connectionLookupURI , id:id};
 } else {
-	opts = {  service:'amqp://localhost:5672', id:id };
+    opts = {  service:'amqp://localhost:5672',id:id};
 }
 
 console.log ('connecting to mq light as follows' ,opts);

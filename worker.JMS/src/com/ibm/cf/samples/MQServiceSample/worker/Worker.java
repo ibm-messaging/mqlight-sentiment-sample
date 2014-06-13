@@ -3,28 +3,17 @@
 /* Program name: WebSphereMQServiceSampleWorker                     */
 /*                                                                  */
 /* Description: A java program that demonstrates the use of the     */
-/*              WebSphere MQ Service                                */
-/*                                                                  */
-/*   <copyright                                                     */
-/*   notice="lm-source-program"                                     */
-/*   pids=""                                                        */
-/*   years="2013"                                                   */
-/*   crc="2752031869" >                                             */
-/*   Licensed Materials - Property of IBM                           */
-/*                                                                  */
-/*                                                                  */
+/*              MQLight Service                                     */
 /*                                                                  */
 /*   (C) Copyright IBM Corp. 2013 All Rights Reserved.              */
 /*                                                                  */
 /*   US Government Users Restricted Rights - Use, duplication or    */
 /*   disclosure restricted by GSA ADP Schedule Contract with        */
 /*   IBM Corp.                                                      */
-/*   </copyright>                                                   */
 /********************************************************************/
 package com.ibm.cf.samples.MQServiceSample.worker;
 
 import java.util.Random;
-
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
@@ -39,7 +28,7 @@ import javax.jms.TopicSubscriber;
 
 import com.ibm.json.java.JSON;
 import com.ibm.json.java.JSONArray;
-import com.ibm.cf.samples.utility.WebSphereMQServiceConnectionHelper;
+import com.ibm.cf.samples.utility.MQLightConnectionHelper;
 import com.ibm.json.java.JSONObject;
 import com.ibm.mq.jms.MQConnectionFactory;
 import com.ibm.msg.client.jms.JmsConnectionFactory;
@@ -61,14 +50,9 @@ public class Worker implements MessageListener{
 
 	public static void main(String[] args) throws Exception {
 		worker = new Worker();
-		WebSphereMQServiceConnectionHelper connHelper;
-			connHelper= WebSphereMQServiceConnectionHelper
-					.getWebSphereMQServiceConnectionFactory();	
-		if (connHelper.getServicesDetails().isEmpty()){
-			// internal service label sometimes used in preproduction.
-			connHelper= WebSphereMQServiceConnectionHelper
-					.getWebSphereMQServiceConnectionFactory("MQLight for Koa-0.1");	
-		}
+		MQLightConnectionHelper connHelper;
+			connHelper= MQLightConnectionHelper
+					.getMQLightConnectionHelper();	
 		
 		MQConnectionFactory cf= (MQConnectionFactory) connHelper.getJmsConnectionFactory();
 		cf.setCloneSupport(1);
