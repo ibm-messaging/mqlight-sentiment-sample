@@ -1,12 +1,11 @@
 <?php
 //phpinfo();
-echo "including proton messenger  ";
+echo "including proton messenger \n";
 include ("proton.php");
 $rawservices = getenv ( 'VCAP_SERVICES' );
-echo "got rawservices: ";
 if ($rawservices) {
+        echo "Running in Bluemix. rawservices: \n";
 	$services = json_decode ( $rawservices,true );
-	var_dump ($rawservices);
 	var_dump ($services);
 	if ($services['mqlight'] != null) {
 		$credentials = $services['mqlight'] [0] ['credentials'];
@@ -22,35 +21,22 @@ if ($rawservices) {
 	$mqLightURI = "{$parse['scheme']}://{$credentials['username']}:{$credentials['password']}@{$parse['host']}:{$parse['port']}" ;
 	
 } else {
-    $url="amqp://localhost";
+    echo "Running stand alone \n";
+    $mqLightURI="amqp://localhost";
 }
 echo "MQ Light connection URI is: $mqLightURI \n";
 
 $id = 'PHP_' . rand ( 0, 10000 );
-echo "\ncreating messenger with ID: $id\n ";
+echo "creating messenger with ID: $id \n";
 flush();
 $mess = new Messenger ( $id );
-echo "\nstarting messenger  ";
+echo "starting messenger \n";
 flush();
 //$mess->start ();
-echo "\nsubscribing to $mqLightURI/share:tweetshare:tweets ";
-flush();
-flush();
+echo "subscribing to $mqLightURI/share:tweetshare:tweets \n";
 flush();
 $mess->subscribe ( "$mqLightURI/share:tweetshare:tweets" );
-echo "\n returned from subscribe $mqLightURI/share:tweetshare:tweets ";
-flush();
-
-echo "\n returned from subscribe $mqLightURI/share:tweetshare:tweets ";
-echo "\n returned from subscribe $mqLightURI/share:tweetshare:tweets ";
-echo "\n returned from subscribe $mqLightURI/share:tweetshare:tweets ";
-echo "\n returned from subscribe $mqLightURI/share:tweetshare:tweets ";
-echo "\n returned from subscribe $mqLightURI/share:tweetshare:tweets ";
-echo "\n returned from subscribe $mqLightURI/share:tweetshare:tweets ";
-flush();
-flush();
-flush();
-flush();
+echo "returned from subscribe $mqLightURI/share:tweetshare:tweets \n";
 flush();
 
 $msg = new Message ();
@@ -64,10 +50,11 @@ while ( true ) {
 			continue;
 		}
 		$tweetData = json_decode ( $msg->body );
-		echo "received tweet";
+		echo "received tweet \n";
 		processTweet ( $tweetData );
 	}
 }
+
 function sendMessage($topic, $body) {
 	global $mess;
 	global $mqLightURI;
