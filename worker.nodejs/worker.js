@@ -34,7 +34,6 @@ if (process.env.VCAP_SERVICES) {
 	password  = services [ 'mqlight' ][0].credentials.password;
 	connectionLookupURI  = services [ 'mqlight' ][0].credentials.connectionLookupURI;
 	host      = services [ 'mqlight' ][0].credentials.host;
-	MQXR_Port = services [ 'mqlight' ][0].credentials.msgport;
     }
     else
     {
@@ -42,7 +41,6 @@ if (process.env.VCAP_SERVICES) {
     }
 
     console.log("Host is "+host);
-    console.log("AMQP listener port is "+MQXR_Port);
     console.log("User is "+username);
     console.log("Password is "+password);
     console.log("ConnectionLookupURI is "+connectionLookupURI);
