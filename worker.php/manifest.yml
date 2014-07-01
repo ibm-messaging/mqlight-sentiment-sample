@@ -1,0 +1,9 @@
+---
+applications:
+- disk: 1024M
+  no-route: true
+  path: .
+  buildpack: https://github.com/dmikusa-pivotal/cf-php-build-pack.git
+  memory: 1024M
+  env:
+    BP_DEBUG: True
