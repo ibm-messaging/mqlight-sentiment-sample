@@ -14,7 +14,7 @@ var uuid = require ('node-uuid');
 var io = require('socket.io').listen(app);
 var fs = require('fs');
 var twitter = require('ntwitter');
-var mqlight = require('mqlight');
+var mqlight = require('mqlight-dev');
 var twitterkey = require('./twitterkey.json');
 var id='WEB_' + uuid.v4().substring(0, 7);
 var products=['france','china','USA','UK','germany'];
@@ -30,17 +30,23 @@ var twit = new twitter( twitterkey );
 var  opts;
 if (process.env.VCAP_SERVICES) {
     var services = JSON.parse(process.env.VCAP_SERVICES);
-
+    var myservice="";
     console.log( 'Running BlueMix');
-
-    if (services[ 'mqlight' ] != null)
+    for (svc in services) {
+        console.log('app is bould to service: ' +svc);
+	if (svc.search(/mqlight/i)==0) {
+           myservice=svc;
+           console.log ('mq light service name is ' + myservice);
+	}
+    }
+    if (services[ myservice ] != null)
     {    
-	console.log('Using mqlight');
+	console.log('examining mqlight service:' +myservice);
 	// Use the Bluemix version 2 style lookup
-	username  = services [ 'mqlight' ][0].credentials.username;
-	password  = services [ 'mqlight' ][0].credentials.password;
-	connectionLookupURI  = services [ 'mqlight' ][0].credentials.connectionLookupURI;
-	host      = services [ 'mqlight' ][0].credentials.host;
+	username  = services [ myservice  ][0].credentials.username;
+	password  = services [ myservice ][0].credentials.password;
+	connectionLookupURI  = services [ myservice ][0].credentials.connectionLookupURI;
+	host      = services [ myservice ][0].credentials.host;
     }
     else
     {
@@ -82,15 +88,9 @@ io.sockets.on('connection', function(socket) {
 
     console.log ('connecting to mq light as follows: ',  opts);
     var client = mqlight.createClient(opts);
-    //	Make the connection
-    client.connect(function(err) {
-	if (err) {
-	    console.log(err);
-	}
-    });
 
-    client.on('connected', function() {
-	console.log('Connected to ' + opts.service + ' using client-id ' + client.getId());
+    client.on('started', function() {
+	console.log('Connected to ' + opts.service + ' using client-id ' + client.id);
 
 	var callback = function(err, address) {
 	    if (err) {
@@ -147,4 +147,15 @@ io.sockets.on('connection', function(socket) {
 
     });
 
+    client.on('error', function(error) {
+	      console.error('*** error ***');
+	        if (error) {
+			    if (error.message) console.error('message: %s', error.message);
+			        else if (error.stack) console.error(error.stack);
+				  }
+				    console.error('Exiting.');
+				      process.exit(1);
+    });
+
 });
+

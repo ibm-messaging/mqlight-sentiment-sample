@@ -9,8 +9,7 @@
  * Contributors:
  * IBM - Initial Contribution
  *******************************************************************************/
-
-var mqlight = require('mqlight');
+mqlight = require('mqlight-dev');
 var uuid=require('node-uuid');
 var opts;
 var id='WRKR_' + uuid.v4().substring(0, 7);
@@ -25,15 +24,21 @@ if (process.env.VCAP_SERVICES) {
     var services = JSON.parse(process.env.VCAP_SERVICES);
 
     console.log( 'Running BlueMix');
-
-    if (services[ 'mqlight' ] != null)
-    {    
-	console.log('Using mqlight');
-	// Use the Bluemix version 2 style lookup
-	username  = services [ 'mqlight' ][0].credentials.username;
-	password  = services [ 'mqlight' ][0].credentials.password;
-	connectionLookupURI  = services [ 'mqlight' ][0].credentials.connectionLookupURI;
-	host      = services [ 'mqlight' ][0].credentials.host;
+    for (svc in services) {
+        console.log('app is bould to service: ' +svc);
+        if (svc.search(/mqlight/i)==0) {
+           myservice=svc;
+           console.log ('mq light service name is ' + myservice);
+        }
+    }
+    if (services[ myservice ] != null)
+    {
+        console.log('examining mqlight service:' +myservice);
+        // Use the Bluemix version 2 style lookup
+        username  = services [ myservice  ][0].credentials.username;
+        password  = services [ myservice ][0].credentials.password;
+        connectionLookupURI  = services [ myservice ][0].credentials.connectionLookupURI;
+        host      = services [ myservice ][0].credentials.host;
     }
     else
     {
@@ -52,15 +57,9 @@ opts = {  user: username , password: password, service: connectionLookupURI , id
 console.log ('connecting to mq light as follows' ,opts);
 var client = mqlight.createClient(opts);
 
-//Make the connection
-client.connect(function(err) {
-	if (err) {
-		console.log(err);
-	}
-});
 
-client.on('connected', function() {
-	console.log('Connected to ' + opts.service + ' using client-id ' + client.getId());
+client.on('started', function() {
+	console.log('Connected to ' + opts.service + ' using client-id ' + client.id);
 
 	// Subscribe to the topic 'tweets' to recieve tweets sent by web-tier
 	var destination = client.subscribe('tweets', function(err, address) {
