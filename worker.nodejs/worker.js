@@ -86,8 +86,7 @@ client.on('started', function() {
 
 	// When we recieve a message, process it and send it to web-tier
 	destination.on('message', function(msg, delivery) {
-		processTweet(msg);
-		delivery.message.confirmDelivery();
+		processTweet(msg, delivery);
 	});
 
 	/*
@@ -97,10 +96,10 @@ client.on('started', function() {
 	 * In this example the sentiment analysis is simply a random function as we are demonstrating messaging not analytics.
 	 * Interesting tweets are sent back to the webapp together with the retults of the sentiment analysis
 	 */
-	function processTweet(tweetData) {
+	function processTweet(msg, delivery) {
 		var replyMessage = {};
-		var productNames=tweetData.products;
-		var tweetText=tweetData.tweet;
+		var productNames=msg.products;
+		var tweetText=msg.tweet;
 		productNames.forEach(function (product) {
 			if (tweetText.toUpperCase().indexOf(product.toUpperCase())>0) {
 				replyMessage['tweetText'] =tweetText;
@@ -114,6 +113,7 @@ client.on('started', function() {
 		process.nextTick(function sleep() {
 			var end = new Date().getTime();
 			while(new Date().getTime() < end + 1000) {;}
+			delivery.message.confirmDelivery();
 		});
 		// This blocks the node worker thread for 1 second
 		// you would normally never do this. We are doing it to _simulate_
@@ -122,4 +122,3 @@ client.on('started', function() {
 
 	} 
 });
-setInterval (function (){},300000); // prevent program from exiting. 
