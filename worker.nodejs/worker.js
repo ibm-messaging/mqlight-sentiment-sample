@@ -9,7 +9,7 @@
  * Contributors:
  * IBM - Initial Contribution
  *******************************************************************************/
-mqlight = require('mqlight-dev');
+mqlight = require('mqlight');
 var uuid=require('node-uuid');
 var opts;
 var id='WRKR_' + uuid.v4().substring(0, 7);
@@ -61,8 +61,11 @@ var client = mqlight.createClient(opts);
 client.on('started', function() {
 	console.log('Connected to ' + opts.service + ' using client-id ' + client.id);
 
+	// We only want to process 1 message at a time (credit:1)
+	subOptions = { autoConfirm: false, credit: 1, qos: 1 };
+
 	// Subscribe to the topic 'tweets' to recieve tweets sent by web-tier
-	var destination = client.subscribe('tweets', function(err, address) {
+	var destination = client.subscribe('tweets', 'tweetprocessors', subOptions, function(err, address) {
 		if (err) {
 			console.error('Problem with subscribe  request: ' + err.message);
 			process.exit(0);
@@ -82,8 +85,9 @@ client.on('started', function() {
 	}
 
 	// When we recieve a message, process it and send it to web-tier
-	destination.on('message', function(msg) {
+	destination.on('message', function(msg, delivery) {
 		processTweet(msg);
+		delivery.message.confirmDelivery();
 	});
 
 	/*
@@ -93,8 +97,6 @@ client.on('started', function() {
 	 * In this example the sentiment analysis is simply a random function as we are demonstrating messaging not analytics.
 	 * Interesting tweets are sent back to the webapp together with the retults of the sentiment analysis
 	 */
-
-
 	function processTweet(tweetData) {
 		var replyMessage = {};
 		var productNames=tweetData.products;
@@ -109,14 +111,14 @@ client.on('started', function() {
 			}
 		}); 
 
-		sleep(1000)//This blocks the node worker thread for 1 second
-		//you would normally never do this. We are doing it to _simulate_
-		//a complex algorithm that takes a long time to run. 
-
-		function sleep(time) {
-    	var end = new Date().getTime();
-    	while(new Date().getTime() < end + time) {;}
-		}
+		process.nextTick(function sleep() {
+			var end = new Date().getTime();
+			while(new Date().getTime() < end + 1000) {;}
+		});
+		// This blocks the node worker thread for 1 second
+		// you would normally never do this. We are doing it to _simulate_
+		// a complex algorithm that takes a long time to run.
+		// We use nextTick to give the Node event loop time to send a heartbeat
 
 	} 
 });

@@ -14,7 +14,7 @@ var uuid = require ('node-uuid');
 var io = require('socket.io').listen(app);
 var fs = require('fs');
 var twitter = require('ntwitter');
-var mqlight = require('mqlight-dev');
+var mqlight = require('mqlight');
 var twitterkey = require('./twitterkey.json');
 var id='WEB_' + uuid.v4().substring(0, 7);
 var products=['france','china','USA','UK','germany'];
@@ -134,7 +134,7 @@ io.sockets.on('connection', function(socket) {
 	});
 
 	function sendMessage(topic, body) {
-	    client.send(topic, body, function(err, msg) {
+	    client.send(topic, body, {ttl:15000}, function(err, msg) {
 		if (err) {
 		    console.error('Problem with send request: ' + err.message);
 		    process.exit(0);
