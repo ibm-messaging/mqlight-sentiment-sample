@@ -136,7 +136,7 @@ io.sockets.on('connection', function(socket) {
 	});
 
 	function sendMessage(topic, body) {
-	    client.send(topic, body, {ttl:900000}, function(err, msg) {
+	    client.send(topic, body,  function(err, msg) {
 		if (err) {
 		    console.error('Problem with send request: ' + err.message);
 		    process.exit(0);

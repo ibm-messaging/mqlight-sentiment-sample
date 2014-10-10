@@ -64,7 +64,7 @@ client.on('started', function() {
 	console.log('Connected to ' + opts.service + ' using client-id ' + client.id);
 
 	// We only want to process 1 message at a time (credit:1)
-	subOptions = { autoConfirm: false, credit: 1, qos: 1 };
+	subOptions = { credit: 1, qos: 1 };
 
 	// Subscribe to the topic 'tweets' to recieve tweets sent by web-tier
 	var destination = client.subscribe('tweets', subOptions, function(err, address) {
