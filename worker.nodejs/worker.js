@@ -64,7 +64,7 @@ client.on('started', function() {
 	console.log('Connected to ' + opts.service + ' using client-id ' + client.id);
 
 	// We only want to process 1 message at a time (credit:1)
-	subOptions = { credit: 1, qos: 1 };
+	subOptions = { autoConfirm: false, credit: 1, qos: 1 };
 
 	// Subscribe to the topic 'tweets' to recieve tweets sent by web-tier
 	var destination = client.subscribe('tweets', subOptions, function(err, address) {
@@ -115,6 +115,7 @@ client.on('started', function() {
 		process.nextTick(function sleep() {
 			var end = new Date().getTime();
 			while(new Date().getTime() < end + 1000) {;}
+                        delivery.message.confirmDelivery();
 		});
 		// This blocks the node worker thread for 1 second
 		// you would normally never do this. We are doing it to _simulate_
