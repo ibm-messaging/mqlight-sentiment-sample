@@ -21,6 +21,7 @@ var id='WRKR_' + uuid.v4().substring(0, 7);
  */
 var  opts;
 if (process.env.VCAP_SERVICES) {
+    // App is running in Bluemix
     var services = JSON.parse(process.env.VCAP_SERVICES);
 
     console.log( 'Running BlueMix');
@@ -51,6 +52,7 @@ if (process.env.VCAP_SERVICES) {
     console.log("ConnectionLookupURI is "+connectionLookupURI);
 opts = {  user: username , password: password, service: connectionLookupURI , id:id};
 } else {
+    // App is running outside of bluemix
     opts = {  service:'amqp://localhost:5672',id:id};
 }
 
@@ -65,7 +67,7 @@ client.on('started', function() {
 	subOptions = { autoConfirm: false, credit: 1, qos: 1 };
 
 	// Subscribe to the topic 'tweets' to recieve tweets sent by web-tier
-	var destination = client.subscribe('tweets', 'tweetprocessors', subOptions, function(err, address) {
+	var destination = client.subscribe('tweets', subOptions, function(err, address) {
 		if (err) {
 			console.error('Problem with subscribe  request: ' + err.message);
 			process.exit(0);
@@ -113,7 +115,7 @@ client.on('started', function() {
 		process.nextTick(function sleep() {
 			var end = new Date().getTime();
 			while(new Date().getTime() < end + 1000) {;}
-			delivery.message.confirmDelivery();
+                        delivery.message.confirmDelivery();
 		});
 		// This blocks the node worker thread for 1 second
 		// you would normally never do this. We are doing it to _simulate_

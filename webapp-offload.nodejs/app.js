@@ -29,6 +29,7 @@ var twit = new twitter( twitterkey );
  */
 var  opts;
 if (process.env.VCAP_SERVICES) {
+    // App is running in Bluemix
     var services = JSON.parse(process.env.VCAP_SERVICES);
     var myservice="";
     console.log( 'Running BlueMix');
@@ -59,6 +60,7 @@ if (process.env.VCAP_SERVICES) {
     console.log("ConnectionLookupURI is "+connectionLookupURI);
 opts = {  user: username , password: password, service: connectionLookupURI , id:id};
 } else {
+    // App is running outside of Bluemix
     opts = {  service:'amqp://localhost:5672',id:id};
 }
 var host = (process.env.VCAP_APP_HOST || '0.0.0.0');
@@ -134,7 +136,7 @@ io.sockets.on('connection', function(socket) {
 	});
 
 	function sendMessage(topic, body) {
-	    client.send(topic, body, {ttl:15000}, function(err, msg) {
+	    client.send(topic, body, {ttl:15000},  function(err, msg) {
 		if (err) {
 		    console.error('Problem with send request: ' + err.message);
 		    process.exit(0);

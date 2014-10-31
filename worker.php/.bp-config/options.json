@@ -1,5 +1,0 @@
-{
-	    "WEB_SERVER": "none",
-	    "PHP_VERSION": "{PHP_54_LATEST}",
-	    "PHP_EXTENSIONS" : ["cproton"]
-}
