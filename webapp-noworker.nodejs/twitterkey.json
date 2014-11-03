@@ -1,7 +1,14 @@
 {
+<<<<<<< HEAD
         "consumer_key": "xxxxxxxxxxxxxxxxxxxxxxxxxx",
         "consumer_secret": "xxxxxxxxxxxxxxxxxxxxxxxxxx",
         "access_token_key": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
         "access_token_secret": "xxxxxxxxxxxxxxxxxxxxxx"
+=======
+        "consumer_key": "xxxxxxxxxxxxxxxxxxxxxx",
+        "consumer_secret": "xxxxxxxxxxxxxxxxxxxxx",
+        "access_token_key": "xxxxxxxxxxxxxxxxxxxxxx",
+        "access_token_secret": "xxxxxxxxxxxxxxxxxxxxx"
+>>>>>>> 6ebfb90b591d026f9a87d1f57b673a70639a1787
 }
 
