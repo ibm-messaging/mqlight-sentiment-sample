@@ -7,11 +7,11 @@
     "url": "https://github.com/ibm-messaging/mqlight-sentiment-sample.git"
   },
   "dependencies" : {
-    "mqlight" : "1.0.2014091000",
-    "node-uuid" : ""
+    "mqlight" : "~1.0.x",
+    "node-uuid" : "~1.4.x"
   },
   "engines": {
-    "node": "0.10.15"
+    "node": "~0.10.x"
   },
   "scripts" : {"start":"node worker.js"}
 }
