@@ -1,6 +1,6 @@
 {
-  "name" : "mqlight-worker-thread",
-  "description" : "Worker thread example for IBM MQ Light",
+  "name" : "mqlight-webapp-noworker",
+  "description" : "Standalone application which fetches tweets from Twitter",
   "version" : "1.0.0",
   "repository": {
     "type": "git",
@@ -11,7 +11,7 @@
     "socket.io" : "0.9.16"
   },
   "engines": {
-    "node": "0.10.15"
+    "node": "~0.10.x"
   },
   "scripts" : {"start":"node app.js"}
 }
